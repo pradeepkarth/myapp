@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart'; // Add equatable dependency
+import 'package:equatable/equatable.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
@@ -13,11 +13,12 @@ class HomeLoading extends HomeState {}
 
 class HomeLoaded extends HomeState {
   final List<String> imageUrls;
+  final List<String> offerCarouselImages; // Add list for carousel images
 
-  const HomeLoaded(this.imageUrls);
+  const HomeLoaded(this.imageUrls, this.offerCarouselImages); // Update constructor
 
   @override
-  List<Object> get props => [imageUrls];
+  List<Object> get props => [imageUrls, offerCarouselImages]; // Include in props
 }
 
 class HomeError extends HomeState {
