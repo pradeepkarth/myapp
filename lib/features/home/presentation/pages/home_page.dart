@@ -5,6 +5,7 @@ import 'package:myapp/features/home/presentation/bloc/home_bloc.dart';
 import 'package:myapp/features/home/presentation/bloc/home_event.dart';
 import 'package:myapp/features/home/presentation/bloc/home_state.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart'; // Import the indicator package
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,10 +15,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final CarouselSliderController _carouselController = CarouselSliderController(); // Create a CarouselController
+  final ValueNotifier<int> _current = ValueNotifier<int>(0); // ValueNotifier for current index
+
   @override
   void initState() {
     super.initState();
     context.read<HomeBloc>().add(LoadImages());
+  }
+
+  @override
+  void dispose() {
+    _current.dispose(); // Dispose the ValueNotifier
+    super.dispose();
   }
 
   @override
@@ -35,6 +45,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 // Offer Carousel
                 CarouselSlider(
+                  carouselController: _carouselController, // Assign the controller
                   options: CarouselOptions(
                     height: 200.0,
                     enlargeCenterPage: true,
@@ -45,6 +56,9 @@ class _HomePageState extends State<HomePage> {
                     autoPlayInterval: const Duration(seconds: 3),
                     autoPlayAnimationDuration: const Duration(milliseconds: 800),
                     viewportFraction: 0.8,
+                    onPageChanged: (index, reason) { // Update current index on page change
+                      _current.value = index;
+                    },
                   ),
                   items: state.offerCarouselImages.map((imageUrl) {
                     return Builder(
@@ -64,7 +78,28 @@ class _HomePageState extends State<HomePage> {
                     );
                   }).toList(),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10), // Add spacing between carousel and indicator
+
+                // Carousel Indicator
+                ValueListenableBuilder<int>(
+                  valueListenable: _current,
+                  builder: (context, index, child) {
+                    return AnimatedSmoothIndicator(
+                      activeIndex: index,
+                      count: state.offerCarouselImages.length,
+                      effect: const ExpandingDotsEffect(
+                        activeDotColor: Colors.blue,
+                        dotColor: Colors.grey,
+                        dotHeight: 8,
+                        dotWidth: 8,
+                        expansionFactor: 4,
+                        spacing: 5.0,
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 20), // Add spacing
 
                 // Grid View
                 Expanded(
