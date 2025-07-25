@@ -5,7 +5,7 @@ import 'package:myapp/features/home/presentation/bloc/home_bloc.dart';
 import 'package:myapp/features/home/presentation/bloc/home_event.dart';
 import 'package:myapp/features/home/presentation/bloc/home_state.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart'; // Import the indicator package
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,7 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final CarouselSliderController _carouselController = CarouselSliderController(); // Create a CarouselController
-  final ValueNotifier<int> _current = ValueNotifier<int>(0); // ValueNotifier for current index
+  final ValueNotifier<int> _current = ValueNotifier<int>(0);
 
   @override
   void initState() {
@@ -26,86 +26,99 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _current.dispose(); // Dispose the ValueNotifier
+    _current.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.appTitle),
-      ),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is HomeLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is HomeLoaded) {
-            return Column(
-              children: [
-                // Offer Carousel
-                CarouselSlider(
-                  carouselController: _carouselController, // Assign the controller
-                  options: CarouselOptions(
-                    height: 200.0,
-                    enlargeCenterPage: true,
-                    autoPlay: true,
-                    aspectRatio: 16 / 9,
-                    autoPlayCurve: Curves.fastOutSlowIn,
-                    enableInfiniteScroll: true,
-                    autoPlayInterval: const Duration(seconds: 3),
-                    autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                    viewportFraction: 0.8,
-                    onPageChanged: (index, reason) { // Update current index on page change
-                      _current.value = index;
-                    },
-                  ),
-                  items: state.offerCarouselImages.map((imageUrl) {
-                    return Builder(
-                      builder: (BuildContext context) {
-                        return Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                          decoration: const BoxDecoration(
-                            color: Colors.grey,
-                          ),
-                          child: Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      },
-                    );
-                  }).toList(),
+            return CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  title: const Text(AppStrings.appTitle),
+                  floating: true,
+                  // pinned: true,
+                  // snap: true,
                 ),
-                const SizedBox(height: 10), // Add spacing between carousel and indicator
 
-                // Carousel Indicator
-                ValueListenableBuilder<int>(
-                  valueListenable: _current,
-                  builder: (context, index, child) {
-                    return AnimatedSmoothIndicator(
-                      activeIndex: index,
-                      count: state.offerCarouselImages.length,
-                      effect: const ExpandingDotsEffect(
-                        activeDotColor: Colors.blue,
-                        dotColor: Colors.grey,
-                        dotHeight: 8,
-                        dotWidth: 8,
-                        expansionFactor: 4,
-                        spacing: 5.0,
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      // Offer Carousel
+                      CarouselSlider(
+                        carouselController: _carouselController,
+                        options: CarouselOptions(
+                          height: 200.0,
+                          enlargeCenterPage: true,
+                          autoPlay: true,
+                          aspectRatio: 16 / 9,
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          enableInfiniteScroll: true,
+                          autoPlayInterval: const Duration(seconds: 3),
+                          autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                          viewportFraction: 0.8,
+                          onPageChanged: (index, reason) {
+                            _current.value = index;
+                          },
+                        ),
+                        items: state.offerCarouselImages.map((imageUrl) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                                decoration: const BoxDecoration(
+                                  color: Colors.grey,
+                                ),
+                                child: Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
                       ),
-                    );
-                  },
+                      const SizedBox(height: 10),
+
+                      // Carousel Indicator
+                      ValueListenableBuilder<int>(
+                        valueListenable: _current,
+                        builder: (context, index, child) {
+                          return AnimatedSmoothIndicator(
+                            activeIndex: index,
+                            count: state.offerCarouselImages.length,
+                            effect: const ExpandingDotsEffect(
+                              activeDotColor: Colors.blue,
+                              dotColor: Colors.grey,
+                              dotHeight: 8,
+                              dotWidth: 8,
+                              expansionFactor: 4,
+                              spacing: 5.0,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
 
-                const SizedBox(height: 20), // Add spacing
-
-                // Grid View
-                Expanded(
-                  child: GridView.count(
+                SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    children: List.generate(state.imageUrls.length, (index) {
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                    childAspectRatio: 1.0,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
                       return Center(
                         child: Card(
                           child: Stack(
@@ -132,7 +145,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       );
-                    }),
+                    },
+                    childCount: state.imageUrls.length,
                   ),
                 ),
               ],
