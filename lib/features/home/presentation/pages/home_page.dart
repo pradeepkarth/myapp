@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                                   _current.value = index;
                                 },
                               ),
-                              items: state.offerCarouselImages.map((imageUrl) {
+                              items: state.offerCarouselImages.map((carousalItem) {
                                 return Builder(
                                   builder: (BuildContext context) {
                                     return Container(
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
                                         borderRadius: BorderRadius.circular(18),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: theme.shadowColor.withOpacity(0.08),
+                                            color: theme.shadowColor.withValues(alpha: .08),
                                             blurRadius: 8,
                                             offset: const Offset(0, 4),
                                           ),
@@ -97,21 +97,69 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(18),
-                                        child: Image.network(
-                                          imageUrl,
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                          loadingBuilder: (context, child, progress) {
-                                            if (progress == null) return child;
-                                            return Container(
-                                              color: theme.colorScheme.surfaceVariant,
-                                              child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                                            );
-                                          },
-                                          errorBuilder: (context, error, stackTrace) => Container(
-                                            color: theme.colorScheme.surfaceVariant,
-                                            child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                                          ),
+                                        child: Stack(
+                                          children: [
+                                            Image.network(
+                                              carousalItem.imageUrl,
+                                              fit: BoxFit.cover,
+                                              width: double.infinity,
+                                              loadingBuilder: (context, child, progress) {
+                                                if (progress == null) return child;
+                                                return Container(
+                                                  color: theme.colorScheme.surfaceVariant,
+                                                  child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                                );
+                                              },
+                                              errorBuilder: (context, error, stackTrace) => Container(
+                                                color: theme.colorScheme.surfaceVariant,
+                                                child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                                              ),
+                                            ),
+                                            // Text overlay on the right half
+                                            Positioned.fill(
+                                              child: Align(
+                                                alignment: Alignment.centerRight,
+                                                child: Container(
+                                                  width: MediaQuery.of(context).size.width / (2 * 0.85), // half of the carousel item width (0.85 viewportFraction)
+                                                  padding: const EdgeInsets.all(16.0),
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      begin: Alignment.centerLeft,
+                                                      end: Alignment.centerRight,
+                                                      colors: [
+                                                        theme.colorScheme.shadow.withValues(alpha: 0.5),
+                                                        theme.colorScheme.shadow.withValues(alpha: 0)
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        carousalItem.title, 
+                                                        style: theme.textTheme.titleLarge?.copyWith(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+                                                      const SizedBox(height: 8.0),
+                                                      Text(
+                                                        carousalItem.description, 
+                                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                                          color: Colors.white70,
+                                                        ),
+                                                        maxLines: 3,
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     );

@@ -5,9 +5,9 @@ import 'package:myapp/features/home/domain/usecases/get_home_images_usecase.dart
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetHomeImagesUseCase _getHomeImagesUseCase;
-  final GetOfferCarouselImagesUseCase _getOfferCarouselImagesUseCase;
+  final GetOfferCarouselItemsUseCase _getOfferCarouselItemsUseCase;
 
-  HomeBloc(this._getHomeImagesUseCase, this._getOfferCarouselImagesUseCase) : super(HomeInitial()) {
+  HomeBloc(this._getHomeImagesUseCase, this._getOfferCarouselItemsUseCase) : super(HomeInitial()) {
     on<LoadImages>(_onLoadImages);
   }
 
@@ -16,9 +16,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       // Fetch data from the use cases
       final imageUrls = await _getHomeImagesUseCase.execute();
-      final offerCarouselImages = await _getOfferCarouselImagesUseCase.execute();
+      final offerCarouselItems = await _getOfferCarouselItemsUseCase.execute();
 
-      emit(HomeLoaded(imageUrls, offerCarouselImages));
+      emit(HomeLoaded(imageUrls, offerCarouselItems));
     } catch (e) {
       emit(HomeError(e.toString()));
     }

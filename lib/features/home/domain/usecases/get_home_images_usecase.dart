@@ -10,12 +10,12 @@ class GetHomeImagesUseCase {
   }
 }
 
-class GetOfferCarouselImagesUseCase {
+class GetOfferCarouselItemsUseCase {
   final HomeRepository _homeRepository;
 
-  GetOfferCarouselImagesUseCase(this._homeRepository);
+  GetOfferCarouselItemsUseCase(this._homeRepository);
 
-  Future<List<String>> execute() async {
-    return _homeRepository.fetchOfferCarouselImages();
+  Future<List<CarouselItem>> execute() async {
+    return _homeRepository.fetchOfferCarouselItems();
   }
 }

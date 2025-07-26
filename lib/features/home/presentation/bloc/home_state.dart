@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:myapp/features/home/data/repositories/home_repository.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
@@ -13,7 +14,7 @@ class HomeLoading extends HomeState {}
 
 class HomeLoaded extends HomeState {
   final List<String> imageUrls;
-  final List<String> offerCarouselImages;
+  final List<CarouselItem> offerCarouselImages;
 
   const HomeLoaded(this.imageUrls, this.offerCarouselImages);
 

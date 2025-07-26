@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        BlocProvider(create: (context) => HomeBloc(GetHomeImagesUseCase(homeRepository), GetOfferCarouselImagesUseCase(homeRepository))), // Pass the use case instances
+        BlocProvider(create: (context) => HomeBloc(GetHomeImagesUseCase(homeRepository), GetOfferCarouselItemsUseCase(homeRepository))), // Pass the use case instances
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
