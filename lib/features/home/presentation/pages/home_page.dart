@@ -32,8 +32,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: theme.colorScheme.background,
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is HomeLoading) {
@@ -42,94 +43,94 @@ class _HomePageState extends State<HomePage> {
             return CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  title: const Text(
+                  title: Text(
                     AppStrings.appTitle,
-                    style: TextStyle(
+                    style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
-                      fontSize: 24,
                       letterSpacing: 1.2,
                     ),
                   ),
                   floating: true,
-                  backgroundColor: Colors.white,
-                  elevation: 2,
+                  backgroundColor: theme.appBarTheme.backgroundColor,
+                  elevation: theme.appBarTheme.elevation ?? 2,
                   centerTitle: true,
                 ),
-
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: Column(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
-                          child: CarouselSlider(
-                            carouselController: _carouselController,
-                            options: CarouselOptions(
-                              height: 180.0,
-                              enlargeCenterPage: true,
-                              autoPlay: true,
-                              aspectRatio: 16 / 9,
-                              autoPlayCurve: Curves.fastOutSlowIn,
-                              enableInfiniteScroll: true,
-                              autoPlayInterval: const Duration(seconds: 3),
-                              autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                              viewportFraction: 0.85,
-                              onPageChanged: (index, reason) {
-                                _current.value = index;
-                              },
-                            ),
-                            items: state.offerCarouselImages.map((imageUrl) {
-                              return Builder(
-                                builder: (BuildContext context) {
-                                  return Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(18),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.08),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(18),
-                                      child: Image.network(
-                                        imageUrl,
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        loadingBuilder: (context, child, progress) {
-                                          if (progress == null) return child;
-                                          return Container(
-                                            color: Colors.grey[300],
-                                            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                                          );
-                                        },
-                                        errorBuilder: (context, error, stackTrace) => Container(
-                                          color: Colors.grey[300],
-                                          child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                        AspectRatio(
+                          aspectRatio: 16 / 6,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(18),
+                            child: CarouselSlider(
+                              carouselController: _carouselController,
+                              options: CarouselOptions(
+                                height: double.infinity,
+                                enlargeCenterPage: true,
+                                autoPlay: true,
+                                aspectRatio: 16 / 6,
+                                autoPlayCurve: Curves.fastOutSlowIn,
+                                enableInfiniteScroll: true,
+                                autoPlayInterval: const Duration(seconds: 3),
+                                autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                                viewportFraction: 0.85,
+                                onPageChanged: (index, reason) {
+                                  _current.value = index;
+                                },
+                              ),
+                              items: state.offerCarouselImages.map((imageUrl) {
+                                return Builder(
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(18),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: theme.shadowColor.withOpacity(0.08),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(18),
+                                        child: Image.network(
+                                          imageUrl,
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          loadingBuilder: (context, child, progress) {
+                                            if (progress == null) return child;
+                                            return Container(
+                                              color: theme.colorScheme.surfaceVariant,
+                                              child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                                            );
+                                          },
+                                          errorBuilder: (context, error, stackTrace) => Container(
+                                            color: theme.colorScheme.surfaceVariant,
+                                            child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              );
-                            }).toList(),
+                                    );
+                                  },
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 12),
-
                         ValueListenableBuilder<int>(
                           valueListenable: _current,
                           builder: (context, index, child) {
                             return AnimatedSmoothIndicator(
                               activeIndex: index,
                               count: state.offerCarouselImages.length,
-                              effect: const ExpandingDotsEffect(
-                                activeDotColor: Colors.blueAccent,
-                                dotColor: Colors.grey,
+                              effect: ExpandingDotsEffect(
+                                activeDotColor: theme.colorScheme.primary,
+                                dotColor: theme.colorScheme.onSurface.withOpacity(0.3),
                                 dotHeight: 8,
                                 dotWidth: 8,
                                 expansionFactor: 4,
@@ -143,12 +144,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                   sliver: SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: MediaQuery.of(context).size.width >= 900 ? 4 : 2,
                       crossAxisSpacing: 14.0,
                       mainAxisSpacing: 14.0,
                       childAspectRatio: 0.95,
@@ -170,12 +170,12 @@ class _HomePageState extends State<HomePage> {
                                 loadingBuilder: (context, child, progress) {
                                   if (progress == null) return child;
                                   return Container(
-                                    color: Colors.grey[300],
+                                    color: theme.colorScheme.surfaceVariant,
                                     child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                                   );
                                 },
                                 errorBuilder: (context, error, stackTrace) => Container(
-                                  color: Colors.grey[300],
+                                  color: theme.colorScheme.surfaceVariant,
                                   child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
                                 ),
                               ),
@@ -185,15 +185,14 @@ class _HomePageState extends State<HomePage> {
                                   borderRadius: BorderRadius.circular(18),
                                 ),
                                 alignment: Alignment.center,
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   child: Text(
                                     AppStrings.fishImageAltText,
-                                    style: TextStyle(
+                                    style: theme.textTheme.titleMedium?.copyWith(
                                       color: Colors.white,
-                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      shadows: [
+                                      shadows: const [
                                         Shadow(
                                           color: Colors.black54,
                                           blurRadius: 4,
@@ -216,9 +215,9 @@ class _HomePageState extends State<HomePage> {
               ],
             );
           } else if (state is HomeError) {
-            return Center(child: Text('Error: ${state.message}'));
+            return Center(child: Text('${AppStrings.errorPrefix}${state.message}'));
           }
-          return const Center(child: Text('Press button to load images'));
+          return const Center(child: Text(AppStrings.pressButtonToLoadImages));
         },
       ),
     );

@@ -13,12 +13,12 @@ class HomeLoading extends HomeState {}
 
 class HomeLoaded extends HomeState {
   final List<String> imageUrls;
-  final List<String> offerCarouselImages; // Add list for carousel images
+  final List<String> offerCarouselImages;
 
-  const HomeLoaded(this.imageUrls, this.offerCarouselImages); // Update constructor
+  const HomeLoaded(this.imageUrls, this.offerCarouselImages);
 
   @override
-  List<Object> get props => [imageUrls, offerCarouselImages]; // Include in props
+  List<Object> get props => [imageUrls, offerCarouselImages];
 }
 
 class HomeError extends HomeState {
