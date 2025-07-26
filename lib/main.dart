@@ -6,6 +6,8 @@ import 'package:myapp/core/theme/app_theme.dart';
 import 'package:myapp/features/home/presentation/pages/home_page.dart';
 import 'package:myapp/core/utils/strings.dart';
 import 'package:myapp/features/home/presentation/bloc/home_bloc.dart';
+import 'package:myapp/features/home/data/repositories/home_repository.dart'; // Import the repository
+import 'package:myapp/features/home/domain/usecases/get_home_images_usecase.dart'; // Import the use cases
 
 void main() {
   runApp(const MyApp());
@@ -15,11 +17,12 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
+    final homeRepository = HomeRepository(); // Create a single instance of the repository
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        BlocProvider(create: (context) => HomeBloc()),
+        BlocProvider(create: (context) => HomeBloc(GetHomeImagesUseCase(homeRepository), GetOfferCarouselImagesUseCase(homeRepository))), // Pass the use case instances
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
