@@ -6,6 +6,7 @@ import 'package:myapp/features/home/presentation/bloc/home_event.dart';
 import 'package:myapp/features/home/presentation/bloc/home_state.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -188,78 +189,63 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                         const SizedBox(height: 20),
+                         Align(
+                          alignment: Alignment.centerLeft,
+                           child: Padding(
+                             padding: const EdgeInsets.only(left: 16.0, bottom: 8.0, top: 8.0),
+                             child: Text(
+                              AppStrings.galleryTitle,
+                               style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                               ),
+                                ),
+                           ),
+                         ),
                       ],
                     ),
                   ),
                 ),
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                  sliver: SliverGrid(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: MediaQuery.of(context).size.width >= 900 ? 4 : 2,
-                      crossAxisSpacing: 14.0,
-                      mainAxisSpacing: 14.0,
-                      childAspectRatio: 0.95,
-                    ),
-                    delegate: SliverChildBuilderDelegate(
-                      (BuildContext context, int index) {
-                        return Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          clipBehavior: Clip.antiAlias,
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              Image.network(
-                                state.imageUrls[index],
-                                fit: BoxFit.cover,
-                                loadingBuilder: (context, child, progress) {
-                                  if (progress == null) return child;
-                                  return Container(
-                                    color: theme.colorScheme.surfaceVariant,
-                                    child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                                  );
-                                },
-                                errorBuilder: (context, error, stackTrace) => Container(
-                                  color: theme.colorScheme.surfaceVariant,
-                                  child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
-                                ),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.28),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: Text(
-                                    AppStrings.fishImageAltText,
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      shadows: const [
-                                        Shadow(
-                                          color: Colors.black54,
-                                          blurRadius: 4,
-                                          offset: Offset(1, 1),
-                                        ),
-                                      ],
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      childCount: state.imageUrls.length,
-                    ),
-                  ),
-                ),
+                  sliver: SliverGrid.builder(
+                   gridDelegate: SliverQuiltedGridDelegate(
+        crossAxisCount: MediaQuery.of(context).size.width >= 900 ? 4 : 2,
+        pattern: [
+          QuiltedGridTile(1, 1),
+          QuiltedGridTile(1, 1),
+          QuiltedGridTile(2, 2),
+          QuiltedGridTile(1, 1),
+        ],
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+      ),
+      itemCount: state.imageUrls.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Image.network(
+            state.imageUrls[index],
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, progress) {
+              if (progress == null) return child;
+              return Container(
+                color: theme.colorScheme.surfaceVariant,
+                child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) => Container(
+              color: theme.colorScheme.surfaceVariant,
+              child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+            ),
+          ),
+        );
+      },
+    ),
+  ),
               ],
             );
           } else if (state is HomeError) {
