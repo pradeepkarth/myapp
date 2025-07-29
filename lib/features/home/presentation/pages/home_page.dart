@@ -107,12 +107,14 @@ class _HomePageState extends State<HomePage> {
                                               loadingBuilder: (context, child, progress) {
                                                 if (progress == null) return child;
                                                 return Container(
-                                                  color: theme.colorScheme.surfaceVariant,
+                                                  color: theme.colorScheme.surfaceContainerHighest,
                                                   child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                                                 );
                                               },
+                                              // TODO: dont use minwdth, try other layout combination
                                               errorBuilder: (context, error, stackTrace) => Container(
-                                                color: theme.colorScheme.surfaceVariant,
+                                                color: theme.colorScheme.surfaceContainerHighest,
+                                                constraints: BoxConstraints(minWidth: 300),
                                                 child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
                                               ),
                                             ),
@@ -233,12 +235,12 @@ class _HomePageState extends State<HomePage> {
             loadingBuilder: (context, child, progress) {
               if (progress == null) return child;
               return Container(
-                color: theme.colorScheme.surfaceVariant,
+                color: theme.colorScheme.surfaceContainerHighest,
                 child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
               );
             },
             errorBuilder: (context, error, stackTrace) => Container(
-              color: theme.colorScheme.surfaceVariant,
+              color: theme.colorScheme.surfaceContainerHighest,
               child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
             ),
           ),
