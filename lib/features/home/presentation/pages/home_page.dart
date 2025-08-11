@@ -7,6 +7,7 @@ import 'package:myapp/features/home/presentation/bloc/home_state.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:myapp/features/catalog/presentation/pages/catalog_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -278,6 +279,22 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                         const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const CatalogPage(),
+                                ),
+                              );
+                            },
+                            child: const Text('Go to Catalog'),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
