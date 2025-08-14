@@ -6,8 +6,8 @@ import 'package:myapp/features/home/presentation/bloc/home_event.dart';
 import 'package:myapp/features/home/presentation/bloc/home_state.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myapp/features/catalog/presentation/pages/catalog_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -33,11 +33,30 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void _openWhatsApp() async {
+    final url = Uri.parse('https://wa.me/8870215415');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open WhatsApp')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
+      floatingActionButton: FloatingActionButton(
+        onPressed: _openWhatsApp,
+        backgroundColor: const Color(0xFF25D366),
+        tooltip: 'Chat on WhatsApp',
+        child: const Icon(Icons.whatshot_rounded, color: Colors.white),
+      ),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is HomeLoading) {
@@ -57,6 +76,20 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: theme.appBarTheme.backgroundColor,
                   elevation: theme.appBarTheme.elevation ?? 2,
                   centerTitle: true,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.storefront),
+                      tooltip: 'Go to Catalog',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CatalogPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
@@ -321,17 +354,11 @@ class _HomePageState extends State<HomePage> {
                     vertical: 8.0,
                   ),
                   sliver: SliverGrid.builder(
-                    gridDelegate: SliverQuiltedGridDelegate(
-                      crossAxisCount:
-                          MediaQuery.of(context).size.width >= 900 ? 4 : 2,
-                      pattern: [
-                        QuiltedGridTile(1, 1),
-                        QuiltedGridTile(1, 1),
-                        QuiltedGridTile(2, 2),
-                        QuiltedGridTile(1, 1),
-                      ],
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: MediaQuery.of(context).size.width >= 900 ? 4 : 2,
                       mainAxisSpacing: 8,
                       crossAxisSpacing: 8,
+                      childAspectRatio: 1,
                     ),
                     itemCount: state.imageUrls.length,
                     itemBuilder: (BuildContext context, int index) {
